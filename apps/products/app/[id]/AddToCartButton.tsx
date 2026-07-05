@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@yet-a-ecommerce/ui";
-import { dispatch } from "@yet-a-ecommerce/communication";
+import { dispatch, writeStore } from "@yet-a-ecommerce/communication";
 import { addToCart, getCart } from "@/lib/api-client";
 import type { EventPayload } from "@yet-a-ecommerce/communication";
 
@@ -33,6 +33,9 @@ export function AddToCartButton({
 
       // Fetch updated cart to get total count
       const cart = await getCart();
+
+      // Write full cart to store for checkout app
+      writeStore('checkout', 'cart', cart.items);
 
       // Dispatch event to update Shared Store and UI
       const payload: EventPayload = {
