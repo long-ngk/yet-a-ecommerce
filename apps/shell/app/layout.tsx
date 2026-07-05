@@ -8,8 +8,8 @@
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { GlobalFooter } from '@yet-a-ecommerce/ui';
 import { GlobalHeader } from './_components/GlobalHeader';
-import { GlobalFooter } from './_components/GlobalFooter';
 import { SessionSync } from './_components/SessionSync';
 
 export const metadata: Metadata = {
