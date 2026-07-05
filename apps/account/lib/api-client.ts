@@ -32,12 +32,14 @@ export interface UpdateProfileData {
 async function apiFetch<T>(
   path: string,
   options?: RequestInit,
+  cookieHeader?: string,
 ): Promise<T> {
   const url = `${SHELL_API_URL}${path}`;
   const response = await fetch(url, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       ...options?.headers,
     },
   });
@@ -57,19 +59,26 @@ async function apiFetch<T>(
 
 /**
  * Fetch the current user's profile from GET /api/users/me.
- * Requires a valid session cookie (forwarded automatically by the browser).
+ * Requires cookie header to be passed in for authentication.
  */
-export async function getProfile(): Promise<UserProfile> {
-  return apiFetch<UserProfile>("/api/users/me");
+export async function getProfile(cookieHeader?: string): Promise<UserProfile> {
+  return apiFetch<UserProfile>("/api/users/me", undefined, cookieHeader);
 }
 
 /**
  * Update allowed profile fields via PATCH /api/users/me.
  * Immutable fields (id, email, role) are rejected server-side.
  */
-export async function updateProfile(data: UpdateProfileData): Promise<UserProfile> {
-  return apiFetch<UserProfile>("/api/users/me", {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
+export async function updateProfile(
+  data: UpdateProfileData,
+  cookieHeader?: string,
+): Promise<UserProfile> {
+  return apiFetch<UserProfile>(
+    "/api/users/me",
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    },
+    cookieHeader,
+  );
 }

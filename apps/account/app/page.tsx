@@ -5,6 +5,7 @@
  * Displays: name, email, phone, address, avatar.
  */
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { requireAuth } from "@/lib/auth-guard";
 import { getProfile, type UserProfile } from "@/lib/api-client";
 
@@ -16,7 +17,14 @@ export default async function AccountPage() {
   let fetchError: string | null = null;
 
   try {
-    profile = await getProfile();
+    // Forward cookies for authentication
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+    
+    profile = await getProfile(cookieHeader);
   } catch (err) {
     fetchError =
       err instanceof Error ? err.message : "Failed to load profile.";

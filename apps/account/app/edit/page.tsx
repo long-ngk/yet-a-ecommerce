@@ -3,13 +3,14 @@
 /**
  * Profile edit page — maps to /account/edit
  *
- * Client Component: manages form state, client-side validation, API calls,
+ * Client Component: manages form state, client-side validation,
  * and dispatches profile:update Custom Event on successful save.
  */
 import { useState, useEffect, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { dispatch } from "@yet-a-ecommerce/communication";
-import { getProfile, updateProfile, type UserProfile } from "@/lib/api-client";
+import { loadProfile, saveProfile } from "@/lib/actions";
+import type { UserProfile } from "@/lib/api-client";
 
 // ─── Validation ───────────────────────────────────────────────────────────────
 
@@ -75,7 +76,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     let cancelled = false;
 
-    getProfile()
+    loadProfile()
       .then((profile: UserProfile) => {
         if (!cancelled) {
           setName(profile.name ?? "");
@@ -119,8 +120,8 @@ export default function EditProfilePage() {
 
     setSaving(true);
     try {
-      // call PATCH /api/users/me
-      const updated = await updateProfile({
+      // call server action to update profile
+      const updated = await saveProfile({
         name: name.trim(),
         phone: phone.trim() || undefined,
         address: address.trim() || undefined,
