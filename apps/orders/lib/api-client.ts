@@ -5,7 +5,7 @@
  * The SHELL_API_URL env var defaults to http://localhost:3000 for local development.
  */
 
-const SHELL_API_URL = process.env["SHELL_API_URL"] ?? "http://localhost:3000";
+const SHELL_API_URL = process.env["NEXT_PUBLIC_SHELL_URL"] ?? "http://localhost:3000";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@
  */
 
 const SHELL_API_URL =
-  process.env["SHELL_API_URL"] ?? "http://localhost:3000";
+  process.env["NEXT_PUBLIC_SHELL_URL"] ?? "http://localhost:3000";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
