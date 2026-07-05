@@ -55,7 +55,7 @@ export function ProductCardWithCart({ product }: { product: Product }) {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       <ProductCard
         product={{
           id: product.id,
@@ -72,17 +72,13 @@ export function ProductCardWithCart({ product }: { product: Product }) {
           role="status"
           aria-live="polite"
           style={{
-            position: 'absolute',
-            top: '-40px',
-            left: 0,
-            right: 0,
-            padding: '8px 12px',
-            borderRadius: '4px',
-            fontSize: '12px',
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            fontSize: '14px',
             fontWeight: 500,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
             backgroundColor:
               notification.includes('Failed') ? '#fee2e2' : '#dcfce7',
             color: notification.includes('Failed') ? '#991b1b' : '#166534',
@@ -91,11 +87,13 @@ export function ProductCardWithCart({ product }: { product: Product }) {
                 ? '1px solid #fca5a5'
                 : '1px solid #86efac',
             zIndex: 1000,
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            animation: 'slideIn 0.3s ease-out',
           }}
         >
           {notification}
         </div>
       )}
-    </div>
+    </>
   );
 }
