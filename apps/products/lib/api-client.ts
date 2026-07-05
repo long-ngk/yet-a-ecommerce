@@ -87,3 +87,33 @@ export async function getProduct(id: string): Promise<Product> {
 
   return res.json() as Promise<Product>;
 }
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface Cart {
+  items: CartItem[];
+  total: number;
+}
+
+export async function addToCart(
+  productId: string,
+  quantity: number = 1
+): Promise<Cart> {
+  const res = await fetch(`${SHELL_API_URL}/api/cart`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId, quantity }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to add to cart: ${res.status}`);
+  }
+
+  return res.json() as Promise<Cart>;
+}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@yet-a-ecommerce/ui";
 import { dispatch } from "@yet-a-ecommerce/communication";
+import { addToCart } from "@/lib/api-client";
 import type { EventPayload } from "@yet-a-ecommerce/communication";
 
 interface AddToCartButtonProps {
@@ -14,30 +15,46 @@ interface AddToCartButtonProps {
 
 export function AddToCartButton({
   productId,
-  name,
-  price,
   stock,
 }: AddToCartButtonProps) {
   const [notification, setNotification] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const outOfStock = stock === 0;
 
-  function handleAddToCart(): void {
-    if (outOfStock) return;
+  async function handleAddToCart(): Promise<void> {
+    if (outOfStock || loading) return;
 
-    const payload: EventPayload = {
-      type: "cart:add",
-      data: { productId, name, price, quantity: 1 },
-      timestamp: Date.now(),
-      source: "products",
-    };
+    setLoading(true);
 
-    dispatch("cart:add", payload);
+    try {
+      // Call API to add to cart
+      const cart = await addToCart(productId, 1);
 
-    setNotification("Successfully added to cart!");
-    setTimeout(() => {
-      setNotification(null);
-    }, 3000);
+      // Dispatch event to update Shared Store and UI
+      const payload: EventPayload = {
+        type: "cart:update",
+        data: { totalCount: cart.items.length },
+        timestamp: Date.now(),
+        source: "products",
+      };
+
+      dispatch("cart:update", payload);
+
+      setNotification("Successfully added to cart!");
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+    } catch (err) {
+      setNotification(
+        err instanceof Error ? err.message : "Failed to add to cart"
+      );
+      setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -59,9 +76,9 @@ export function AddToCartButton({
         variant={outOfStock ? "disabled" : "primary"}
         size="large"
         onClick={handleAddToCart}
-        disabled={outOfStock}
+        disabled={outOfStock || loading}
       >
-        Add to Cart
+        {loading ? "Adding..." : "Add to Cart"}
       </Button>
 
       {notification !== null ? (
@@ -70,7 +87,7 @@ export function AddToCartButton({
           aria-live="polite"
           style={{
             marginTop: "12px",
-            color: "#10b981",
+            color: notification.includes("Failed") ? "#ef4444" : "#10b981",
             fontWeight: 500,
             fontSize: "14px",
           }}
