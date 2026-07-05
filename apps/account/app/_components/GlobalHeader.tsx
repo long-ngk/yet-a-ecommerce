@@ -11,7 +11,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Header, Badge, Button } from '@yet-a-ecommerce/ui';
 import type { NavItem } from '@yet-a-ecommerce/ui';
 import { subscribe, readStore, writeStore, clearStore, dispatch } from '@yet-a-ecommerce/communication';
@@ -163,16 +162,16 @@ export function GlobalHeader(): React.ReactElement {
     </div>
   ) : (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <Link href="/login" style={{ textDecoration: 'none' }}>
+      <a href={`${SHELL_URL}/login`} style={{ textDecoration: 'none' }}>
         <Button variant="secondary" size="small">
           Login
         </Button>
-      </Link>
-      <Link href="/register" style={{ textDecoration: 'none' }}>
+      </a>
+      <a href={`${SHELL_URL}/register`} style={{ textDecoration: 'none' }}>
         <Button variant="primary" size="small">
           Register
         </Button>
-      </Link>
+      </a>
     </div>
   );
 
