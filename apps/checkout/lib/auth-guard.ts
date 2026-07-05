@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 const SHELL_API_URL =
   process.env["SHELL_API_URL"] ?? "http://localhost:3000";
@@ -16,20 +17,41 @@ export interface Session {
 /**
  * Fetch the current session from the Shell API.
  * Returns null when the user is not authenticated or the request fails.
+ * Forwards cookies for proper authentication.
  */
 export async function getSession(): Promise<Session | null> {
-  const res = await fetch(`${SHELL_API_URL}/api/auth/session`, {
-    cache: "no-store",
-  });
+  let cookieHeader: string;
 
-  if (!res.ok) return null;
+  try {
+    const cookieStore = await cookies();
+    cookieHeader = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+  } catch {
+    cookieHeader = "";
+  }
 
-  const data = (await res.json()) as Session;
+  try {
+    const res = await fetch(`${SHELL_API_URL}/api/auth/session`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      },
+      cache: "no-store",
+    });
 
-  // NextAuth returns an empty object `{}` when the session does not exist
-  if (!data.user) return null;
+    if (!res.ok) return null;
 
-  return data;
+    const data = (await res.json()) as Session;
+
+    // NextAuth returns an empty object `{}` when the session does not exist
+    if (!data.user) return null;
+
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 /**
