@@ -64,7 +64,7 @@ export default async function OrdersPage() {
   const session = await getSession();
   if (!session) {
     const shellUrl = process.env["SHELL_API_URL"] ?? "http://localhost:3000";
-    redirect(`${shellUrl}/api/auth/signin?callbackUrl=${shellUrl}/orders`);
+    redirect(`${shellUrl}/login?callbackUrl=${shellUrl}/orders`);
   }
 
   // Forward cookies so NextAuth session is validated server-side

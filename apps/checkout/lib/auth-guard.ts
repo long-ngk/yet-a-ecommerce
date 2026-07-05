@@ -48,7 +48,7 @@ export async function requireAuth(callbackPath = "/checkout"): Promise<Session> 
 
   if (!session) {
     const shellUrl = process.env["SHELL_API_URL"] ?? "http://localhost:3000";
-    const loginUrl = `${shellUrl}/api/auth/signin?callbackUrl=${encodeURIComponent(`${shellUrl}${callbackPath}`)}`;
+    const loginUrl = `${shellUrl}/login?callbackUrl=${encodeURIComponent(`${shellUrl}${callbackPath}`)}`;
     redirect(loginUrl);
   }
 

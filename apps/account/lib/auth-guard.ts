@@ -59,7 +59,7 @@ export async function getSession(): Promise<Session> {
   if (!session) {
     // unauthenticated users are redirected to login
     const shellUrl = process.env["SHELL_API_URL"] ?? "http://localhost:3000";
-    redirect(`${shellUrl}/api/auth/signin?callbackUrl=${shellUrl}/account`);
+    redirect(`${shellUrl}/login?callbackUrl=${shellUrl}/account`);
   }
 
   return session;

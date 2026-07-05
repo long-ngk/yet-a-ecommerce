@@ -12,7 +12,7 @@
  * import { redirect } from "next/navigation";
  *
  * const session = await getSession();
- * if (!session) redirect("/api/auth/signin");
+ * if (!session) redirect("/login");
  * ```
  *
  * Unauthenticated users must be redirected to login.

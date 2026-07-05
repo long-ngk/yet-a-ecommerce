@@ -324,7 +324,7 @@ NextAuth.js v5 (Auth.js), JWT session strategy, configured in `apps/shell/lib/au
 5. Zones mounting later read `shell:auth` from localStorage for catch-up
 6. On logout: `clearStore("shell", "auth")` + `dispatch("auth:logout", ...)` + NextAuth `signOut`
 
-**Auth guard on MFEs:** Each auth-guarded zone (orders, account, checkout) has a `lib/auth-guard.ts` that calls the session endpoint and redirects to `SHELL_API_URL/api/auth/signin` with a `callbackUrl` if unauthenticated.
+**Auth guard on MFEs:** Each auth-guarded zone (orders, account, checkout) has a `lib/auth-guard.ts` that calls the session endpoint and redirects to `SHELL_API_URL/login` with a `callbackUrl` if unauthenticated.
 
 ---
 
