@@ -128,8 +128,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       0,
     );
 
-    // Create order + order items + clear cart items atomically
+    // Create order + order items + clear cart items + update stock atomically
     const order = await prisma.$transaction(async (tx) => {
+      // Update product stock for each cart item
+      for (const item of cart.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
       const newOrder = await tx.order.create({
         data: {
           userId,
