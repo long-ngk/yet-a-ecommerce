@@ -5,12 +5,12 @@
  * Displays: name, email, phone, address, avatar.
  */
 import Link from "next/link";
-import { getSession } from "@/lib/auth-guard";
+import { requireAuth } from "@/lib/auth-guard";
 import { getProfile, type UserProfile } from "@/lib/api-client";
 
 export default async function AccountPage() {
   // redirect to login if unauthenticated
-  await getSession();
+  await requireAuth();
 
   let profile: UserProfile | null = null;
   let fetchError: string | null = null;

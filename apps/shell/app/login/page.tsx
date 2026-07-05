@@ -7,12 +7,12 @@
  * On successful login, redirects to callbackUrl or dashboard.
  */
 
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
@@ -53,92 +53,100 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={styles.main}>
-      <div style={styles.card}>
-        {/* Header */}
-        <div style={styles.header}>
-          <h1 style={styles.title}>Sign In</h1>
-          <p style={styles.subtitle}>
-            Don't have an account?{" "}
-            <Link href="/register" style={styles.link}>
-              Register here
-            </Link>
-          </p>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div role="alert" aria-live="polite" style={styles.errorBox}>
-            {error}
-          </div>
-        )}
-
-        {/* Login form */}
-        <form onSubmit={handleSubmit} noValidate style={styles.form}>
-          {/* Email field */}
-          <div style={styles.fieldGroup}>
-            <label htmlFor="email" style={styles.label}>
-              Email Address <span style={styles.required}>*</span>
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              disabled={loading}
-              aria-describedby={error ? "error-message" : undefined}
-              aria-invalid={!!error}
-              style={styles.input}
-              autoComplete="email"
-            />
-          </div>
-
-          {/* Password field */}
-          <div style={styles.fieldGroup}>
-            <label htmlFor="password" style={styles.label}>
-              Password <span style={styles.required}>*</span>
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              disabled={loading}
-              aria-describedby={error ? "error-message" : undefined}
-              aria-invalid={!!error}
-              style={styles.input}
-              autoComplete="current-password"
-            />
-          </div>
-
-          {/* Submit button */}
-          <button
-            type="submit"
-            disabled={loading || !email || !password}
-            style={
-              loading || !email || !password
-                ? { ...styles.submitBtn, opacity: 0.6, cursor: "not-allowed" }
-                : styles.submitBtn
-            }
-            aria-busy={loading}
-          >
-            {loading ? "Signing in…" : "Sign In"}
-          </button>
-        </form>
-
-        {/* Footer */}
-        <p style={styles.footer}>
-          By signing in, you agree to our{" "}
-          <Link href="/terms" style={styles.link}>
-            Terms of Service
+    <div style={styles.card}>
+      {/* Header */}
+      <div style={styles.header}>
+        <h1 style={styles.title}>Sign In</h1>
+        <p style={styles.subtitle}>
+          Don't have an account?{" "}
+          <Link href="/register" style={styles.link}>
+            Register here
           </Link>
-          .
         </p>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <div role="alert" aria-live="polite" style={styles.errorBox}>
+          {error}
+        </div>
+      )}
+
+      {/* Login form */}
+      <form onSubmit={handleSubmit} noValidate style={styles.form}>
+        {/* Email field */}
+        <div style={styles.fieldGroup}>
+          <label htmlFor="email" style={styles.label}>
+            Email Address <span style={styles.required}>*</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            required
+            disabled={loading}
+            aria-describedby={error ? "error-message" : undefined}
+            aria-invalid={!!error}
+            style={styles.input}
+            autoComplete="email"
+          />
+        </div>
+
+        {/* Password field */}
+        <div style={styles.fieldGroup}>
+          <label htmlFor="password" style={styles.label}>
+            Password <span style={styles.required}>*</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            disabled={loading}
+            aria-describedby={error ? "error-message" : undefined}
+            aria-invalid={!!error}
+            style={styles.input}
+            autoComplete="current-password"
+          />
+        </div>
+
+        {/* Submit button */}
+        <button
+          type="submit"
+          disabled={loading || !email || !password}
+          style={
+            loading || !email || !password
+              ? { ...styles.submitBtn, opacity: 0.6, cursor: "not-allowed" }
+              : styles.submitBtn
+          }
+          aria-busy={loading}
+        >
+          {loading ? "Signing in…" : "Sign In"}
+        </button>
+      </form>
+
+      {/* Footer */}
+      <p style={styles.footer}>
+        By signing in, you agree to our{" "}
+        <Link href="/terms" style={styles.link}>
+          Terms of Service
+        </Link>
+        .
+      </p>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <main style={styles.main}>
+      <Suspense fallback={<div style={{ ...styles.card, textAlign: "center" as const }}>Loading...</div>}>
+        <LoginForm />
+      </Suspense>
     </main>
   );
 }

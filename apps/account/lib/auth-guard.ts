@@ -1,10 +1,15 @@
 /**
  * Auth guard for Account MFE Server Components.
  *
- * Checks whether the current user has a valid session by calling the Shell
- * MFE session endpoint.  If unauthenticated, redirects to the Shell login page.
+ * The Account MFE does not run NextAuth itself — authentication is managed
+ * entirely by the Shell MFE. Instead, we verify the session by calling
+ * the Shell's session endpoint and forwarding the user's cookies so that
+ * NextAuth can validate the JWT.
+ *
+ * If unauthenticated, redirects to the Shell login page.
  */
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const SHELL_API_URL =
@@ -24,40 +29,71 @@ export interface Session {
 }
 
 /**
- * Returns the current session or redirects to the Shell login page.
+ * Returns the current session or null if unauthenticated.
  *
- * Call this at the top of any Account page / layout that requires
- * authentication.
+ * Fetches the session from the Shell MFE's NextAuth endpoint,
+ * forwarding cookies so NextAuth can validate the JWT.
  *
  * ```ts
  * const session = await getSession();
- * // session.user is always defined here
+ * if (!session) redirect("/login");
  * ```
  */
-export async function getSession(): Promise<Session> {
-  let session: Session | null = null;
+export async function getSession(): Promise<Session | null> {
+  let cookieHeader: string;
+
+  try {
+    const cookieStore = await cookies();
+    cookieHeader = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+  } catch {
+    // cookies() may throw in environments where headers are unavailable
+    cookieHeader = "";
+  }
 
   try {
     const response = await fetch(`${SHELL_API_URL}/api/auth/session`, {
-      // Forward cookies so NextAuth can read the JWT
-      credentials: "include",
-      // Do not cache — auth state must be fresh on every request
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      },
       cache: "no-store",
     });
 
-    if (response.ok) {
-      const data = (await response.json()) as Partial<Session>;
-      // NextAuth returns {} when there is no active session
-      if (data.user) {
-        session = data as Session;
-      }
+    if (!response.ok) {
+      return null;
     }
+
+    const data = (await response.json()) as Partial<Session>;
+
+    // NextAuth returns an empty object `{}` when there is no active session
+    if (!data.user) {
+      return null;
+    }
+
+    return data as Session;
   } catch {
-    // Network errors are treated as unauthenticated
+    // Network errors or JSON parse failures — treat as unauthenticated
+    return null;
   }
+}
+
+/**
+ * Ensures the user is authenticated, or redirects to login.
+ *
+ * Call this at the top of any Account page that requires authentication.
+ *
+ * ```ts
+ * const session = await requireAuth();
+ * // session.user is always defined here
+ * ```
+ */
+export async function requireAuth(): Promise<Session> {
+  const session = await getSession();
 
   if (!session) {
-    // unauthenticated users are redirected to login
     const shellUrl = process.env["SHELL_API_URL"] ?? "http://localhost:3000";
     redirect(`${shellUrl}/login?callbackUrl=${shellUrl}/account`);
   }
