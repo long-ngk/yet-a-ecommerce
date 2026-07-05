@@ -8,9 +8,9 @@
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { GlobalHeader } from './components/GlobalHeader';
-import { GlobalFooter } from './components/GlobalFooter';
-import { SessionSync } from './components/SessionSync';
+import { GlobalHeader } from './_components/GlobalHeader';
+import { GlobalFooter } from './_components/GlobalFooter';
+import { SessionSync } from './_components/SessionSync';
 
 export const metadata: Metadata = {
   title: 'Yet-A-Ecommerce',

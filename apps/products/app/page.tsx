@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getProducts } from '../lib/api-client';
-import { ProductFilters } from './components/ProductFilters';
-import { ProductCardWithCart } from './components/ProductCardWithCart';
+import { ProductFilters } from './_components/ProductFilters';
+import { ProductCardWithCart } from './_components/ProductCardWithCart';
 
 interface SearchParams {
   search?: string;
