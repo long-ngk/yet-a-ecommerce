@@ -68,6 +68,11 @@ const cardTitleStyle: React.CSSProperties = {
   fontWeight: 600,
   color: '#111827',
   margin: 0,
+  minHeight: '40px',
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
 };
 
 const cardActionsStyle: React.CSSProperties = {
