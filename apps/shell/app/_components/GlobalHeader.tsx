@@ -59,11 +59,35 @@ export function GlobalHeader(): React.ReactElement {
   // Catch-up from Shared Store on mount
   // -------------------------------------------------------------------------
   useEffect(() => {
-    // sync auth state from Shared Store when Shell mounts
-    const storedAuth = readStore<AuthState>('shell', 'auth');
-    if (storedAuth) {
-      setAuthUser(storedAuth);
-    }
+    // Try to fetch fresh session from server first
+    const fetchSession = async () => {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (response.ok) {
+          const session = await response.json();
+          if (session?.user) {
+            const authData: AuthState = {
+              userId: session.user.id,
+              name: session.user.name || '',
+              email: session.user.email || '',
+            };
+            writeStore('shell', 'auth', authData);
+            setAuthUser(authData);
+            return;
+          }
+        }
+      } catch (err) {
+        // fallback to store
+      }
+      
+      // Fallback: sync auth state from Shared Store if session fetch fails
+      const storedAuth = readStore<AuthState>('shell', 'auth');
+      if (storedAuth) {
+        setAuthUser(storedAuth);
+      }
+    };
+
+    fetchSession();
 
     // read initial cart count from Shared Store
     const storedCart = readStore<CartStore>('checkout', 'cart');
@@ -201,12 +225,12 @@ export function GlobalHeader(): React.ReactElement {
   ) : (
     // show login/register when unauthenticated
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <Link href="/account/login" style={{ textDecoration: 'none' }}>
+      <Link href="/login" style={{ textDecoration: 'none' }}>
         <Button variant="secondary" size="small">
           Login
         </Button>
       </Link>
-      <Link href="/account/register" style={{ textDecoration: 'none' }}>
+      <Link href="/register" style={{ textDecoration: 'none' }}>
         <Button variant="primary" size="small">
           Register
         </Button>

@@ -11,6 +11,7 @@ import { FormEvent, useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { dispatch, writeStore } from "@yet-a-ecommerce/communication";
 
 function RegisterForm() {
   const router = useRouter();
@@ -74,6 +75,27 @@ function RegisterForm() {
       if (signInResult?.error) {
         setError("Registration successful, but automatic login failed. Please sign in manually.");
       } else if (signInResult?.ok) {
+        // Fetch session data
+        const sessionResponse = await fetch("/api/auth/session");
+        if (sessionResponse.ok) {
+          const session = await sessionResponse.json();
+          if (session?.user) {
+            const authData = {
+              userId: session.user.id,
+              name: session.user.name || "",
+              email: session.user.email || "",
+            };
+            // Write to store
+            writeStore("shell", "auth", authData);
+            // Dispatch event for other MFEs to catch
+            dispatch("auth:login", {
+              type: "auth:login",
+              data: authData,
+              timestamp: Date.now(),
+              source: "shell",
+            });
+          }
+        }
         router.push("/");
       }
     } catch (err) {

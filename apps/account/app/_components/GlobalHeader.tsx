@@ -49,10 +49,33 @@ export function GlobalHeader(): React.ReactElement {
   const [cartCount, setCartCount] = useState<number>(0);
 
   useEffect(() => {
-    const storedAuth = readStore<AuthState>('shell', 'auth');
-    if (storedAuth) {
-      setAuthUser(storedAuth);
-    }
+    const fetchSession = async () => {
+      try {
+        const response = await fetch(`${SHELL_URL}/api/auth/session`);
+        if (response.ok) {
+          const session = await response.json();
+          if (session?.user) {
+            const authData: AuthState = {
+              userId: session.user.id,
+              name: session.user.name || '',
+              email: session.user.email || '',
+            };
+            writeStore('shell', 'auth', authData);
+            setAuthUser(authData);
+            return;
+          }
+        }
+      } catch (err) {
+        // fallback to store
+      }
+      
+      const storedAuth = readStore<AuthState>('shell', 'auth');
+      if (storedAuth) {
+        setAuthUser(storedAuth);
+      }
+    };
+
+    fetchSession();
 
     // Read cart items from store (AddToCartButton writes CartItem[] here)
     const storedCartItems = readStore<CartItem[]>('checkout', 'cart');
