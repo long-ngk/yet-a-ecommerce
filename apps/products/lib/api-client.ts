@@ -94,6 +94,8 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  subtotal: number;
+  image: string | null;
 }
 
 export interface Cart {
@@ -104,15 +106,30 @@ export interface Cart {
 export async function addToCart(
   productId: string,
   quantity: number = 1
-): Promise<Cart> {
+): Promise<CartItem> {
   const res = await fetch(`${SHELL_API_URL}/api/cart`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ productId, quantity }),
+    credentials: "include",
   });
 
   if (!res.ok) {
     throw new Error(`Failed to add to cart: ${res.status}`);
+  }
+
+  return res.json() as Promise<CartItem>;
+}
+
+export async function getCart(): Promise<Cart> {
+  const res = await fetch(`${SHELL_API_URL}/api/cart`, {
+    method: "GET",
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch cart: ${res.status}`);
   }
 
   return res.json() as Promise<Cart>;
