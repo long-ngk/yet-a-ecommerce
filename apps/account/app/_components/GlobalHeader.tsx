@@ -17,6 +17,8 @@ import type { NavItem } from '@yet-a-ecommerce/ui';
 import { subscribe, readStore, writeStore, clearStore, dispatch } from '@yet-a-ecommerce/communication';
 import type { EventPayload } from '@yet-a-ecommerce/communication';
 
+const SHELL_URL = process.env['NEXT_PUBLIC_SHELL_URL'] ?? 'http://localhost:3000';
+
 interface AuthState {
   userId: string;
   name: string;
@@ -175,8 +177,8 @@ export function GlobalHeader(): React.ReactElement {
   );
 
   const logo = (
-    <Link
-      href="/"
+    <a
+      href={SHELL_URL}
       style={{
         fontWeight: 700,
         fontSize: '18px',
@@ -186,7 +188,7 @@ export function GlobalHeader(): React.ReactElement {
       }}
     >
       🛍 Yet-A-Ecommerce
-    </Link>
+    </a>
   );
 
   return (

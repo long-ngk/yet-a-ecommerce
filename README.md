@@ -418,7 +418,16 @@ pnpm dev
 
 ## Environment Variables
 
-### `apps/shell/.env`
+### `apps/shell/.env.local`
+
+Copy from `apps/shell/.env.example`:
+
+```bash
+cp apps/shell/.env.example apps/shell/.env.local
+```
+
+Then edit `apps/shell/.env.local`:
+
 ```env
 DATABASE_URL="postgresql://postgres:password@localhost:5432/ecommerce"
 NEXTAUTH_SECRET="your-secret-change-in-production"
@@ -437,12 +446,25 @@ ACCOUNT_URL="http://localhost:3003"
 CHECKOUT_URL="http://localhost:3004"
 ```
 
-### Each MFE app (`apps/products`, `apps/orders`, `apps/account`, `apps/checkout`) `.env`
-```env
-SHELL_API_URL="http://localhost:3000"
+### MFE Apps — Each MFE (`apps/products`, `apps/orders`, `apps/account`, `apps/checkout`)
+
+Copy from `.env.example` for each MFE:
+
+```bash
+cp apps/products/.env.example apps/products/.env.local
+cp apps/orders/.env.example apps/orders/.env.local
+cp apps/account/.env.example apps/account/.env.local
+cp apps/checkout/.env.example apps/checkout/.env.local
 ```
 
-All `.env` files are gitignored. See `apps/shell/.env.example` for reference.
+Each `.env.local` file should contain:
+
+```env
+# Public Shell URL (available in both server and browser)
+NEXT_PUBLIC_SHELL_URL="http://localhost:3000"
+```
+
+All `.env.local` files are gitignored. Only `.env.example` files are committed.
 
 ---
 
