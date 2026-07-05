@@ -88,7 +88,7 @@ export default function EditProfilePage() {
       .catch(() => {
         if (!cancelled) {
           // If we can't load the profile, redirect to view page
-          router.replace("/account");
+          router.replace("/");
         }
       })
       .finally(() => {
@@ -142,7 +142,7 @@ export default function EditProfilePage() {
       });
 
       // Navigate back to view page after short delay
-      setTimeout(() => router.push("/account"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     } catch (err) {
       // show error notification on failure
       setNotification({
@@ -177,7 +177,7 @@ export default function EditProfilePage() {
           <h1 style={styles.title}>Edit Profile</h1>
           <button
             type="button"
-            onClick={() => router.push("/account")}
+            onClick={() => router.push("/")}
             style={styles.cancelBtn}
           >
             Cancel

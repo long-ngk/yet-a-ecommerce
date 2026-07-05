@@ -35,7 +35,7 @@ export default async function AccountPage() {
       <div style={styles.card}>
         <div style={styles.header}>
           <h1 style={styles.title}>My Profile</h1>
-          <Link href="/account/edit" style={styles.editLink}>
+          <Link href="/edit" style={styles.editLink}>
             Edit Profile
           </Link>
         </div>
