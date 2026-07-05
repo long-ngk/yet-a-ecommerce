@@ -23,8 +23,14 @@ interface AuthState {
   email: string;
 }
 
-interface CartStore {
-  totalCount: number;
+interface CartItem {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  subtotal: number;
+  image: string | null;
 }
 
 const NAV_LINKS: { href: string; label: string; showBadge?: boolean }[] = [
@@ -47,9 +53,10 @@ export function GlobalHeader(): React.ReactElement {
       setAuthUser(storedAuth);
     }
 
-    const storedCart = readStore<CartStore>('checkout', 'cart');
-    if (storedCart && typeof storedCart.totalCount === 'number') {
-      setCartCount(storedCart.totalCount);
+    // Read cart items from store (AddToCartButton writes CartItem[] here)
+    const storedCartItems = readStore<CartItem[]>('checkout', 'cart');
+    if (storedCartItems && Array.isArray(storedCartItems)) {
+      setCartCount(storedCartItems.length);
     }
   }, []);
 
