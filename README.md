@@ -514,3 +514,29 @@ pnpm test
 # Clean all build artifacts and node_modules
 pnpm clean
 ```
+
+## Demo
+
+### Login page:
+
+![Login page](/docs/images/login-page.png)
+
+### Products page:
+
+![Products page](/docs/images/product-page.png)
+
+### Orders page:
+
+![Orders page](/docs/images/order-page.png)
+
+### Account page:
+
+![Account page](/docs/images/account-page.png)
+
+### Cart page:
+
+![Cart page](/docs/images/cart-page.png)
+
+### Checkout page:
+
+![Checkout page](/docs/images/checkout-page.png)
